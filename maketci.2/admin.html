@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MAKETÇİ - Admin Paneli</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        .drag-drop-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .slide-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .drag-card {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .drag-area {
+            border: 2px dashed #ff6b00;
+            border-radius: 10px;
+            padding: 25px 15px;
+            text-align: center;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+        }
+
+        .drag-area.active {
+            background: #eef9f2;
+            border-color: #2e7d32;
+        }
+
+        .drag-area p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .btn-save-slide {
+            background: #1b4332;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn-save-slide:hover {
+            background: #2d6a4f;
+        }
+
+        .admin-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 20px;
+            font-weight: bold;
+        }
+
+        .product-card {
+            position: relative;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .btn-delete {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-delete:hover {
+            background: #8e0000;
+        }
+
+        .empty-products {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <a href="index.html">
+            MAKET<span>Çİ</span> - Admin
+        </a>
+    </div>
+
+    <nav>
+        <ul>
+            <li>
+                <a href="index.html">
+                    Sayta Qayıt
+                </a>
+            </li>
+
+            <li>
+                <a href="Shop.html">
+                    Məhsullar
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</header>
+
+
+<main class="container">
+
+    <!-- ================================================= -->
+    <!-- SLAYDER -->
+    <!-- ================================================= -->
+
+    <div class="drag-drop-section">
+
+        <h2 class="section-title">
+            🖼️ Ana Səhifə Slayder Şəkilləri
+        </h2>
+
+        <div class="slide-admin-grid">
+
+
+            <!-- SLAYD 1 -->
+
+            <div class="drag-card">
+
+                <h3>Slayd 1</h3>
+
+                <div
+                    class="drag-area"
+                    id="drop-zone-1"
+                    onclick="document.getElementById('file-input-1').click()"
+                >
+
+                    <p>
+                        Şəkli buraya sürüşdürün və ya
+                        <b>klikləyin</b>
+                    </p>
+
+                    <input
+                        type="file"
+                        id="file-input-1"
+                        accept="image/*"
+                        hidden
+                        onchange="handleFileSelect(event, 1)"
+                    >
+
+                    <img
+                        id="preview-1"
+                        class="preview-img"
+                        alt="Slayd 1"
+                    >
+
+                </div>
+
+                <button
+                    class="btn-save-slide"
+                    onclick="saveSlideImage(1)"
+                >
+                    Slayd 1-i Yadda Saxla
+                </button>
+
+            </div>
+
+
+            <!-- SLAYD 2 -->
+
+            <div class="drag-card">
+
+                <h3>Slayd 2</h3>
+
+                <div
+                    class="drag-area"
+                    id="drop-zone-2"
+                    onclick="document.getElementById('file-input-2').click()"
+                >
+
+                    <p>
+                        Şəkli buraya sürüşdürün və ya
+                        <b>klikləyin</b>
+                    </p>
+
+                    <input
+                        type="file"
+                        id="file-input-2"
+                        accept="image/*"
+                        hidden
+                        onchange="handleFileSelect(event, 2)"
+                    >
+
+                    <img
+                        id="preview-2"
+                        class="preview-img"
+                        alt="Slayd 2"
+                    >
+
+                </div>
+
+                <button
+                    class="btn-save-slide"
+                    onclick="saveSlideImage(2)"
+                >
+                    Slayd 2-ni Yadda Saxla
+                </button>
+
+            </div>
+
+
+            <!-- SLAYD 3 -->
+
+            <div class="drag-card">
+
+                <h3>Slayd 3</h3>
+
+                <div
+                    class="drag-area"
+                    id="drop-zone-3"
+                    onclick="document.getElementById('file-input-3').click()"
+                >
+
+                    <p>
+                        Şəkli buraya sürüşdürün və ya
+                        <b>klikləyin</b>
+                    </p>
+
+                    <input
+                        type="file"
+                        id="file-input-3"
+                        accept="image/*"
+                        hidden
+                        onchange="handleFileSelect(event, 3)"
+                    >
+
+                    <img
+                        id="preview-3"
+                        class="preview-img"
+                        alt="Slayd 3"
+                    >
+
+                </div>
+
+                <button
+                    class="btn-save-slide"
+                    onclick="saveSlideImage(3)"
+                >
+                    Slayd 3-ü Yadda Saxla
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MƏHSUL ƏLAVƏ ET -->
+    <!-- ================================================= -->
+
+    <h2 class="section-title">
+        Ətraflı Məhsul Əlavə Et
+    </h2>
+
+
+    <div class="admin-form-container">
+
+        <form id="product-form">
+
+
+            <!-- AD -->
+
+            <div class="form-group">
+
+                <label>
+                    Məhsulun Adı:
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    required
+                    placeholder="Məs: Mini Kərpic Ev Dəsti"
+                >
+
+            </div>
+
+
+            <!-- QİYMƏT -->
+
+            <div class="form-group">
+
+                <label>
+                    Qiymət (AZN):
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    step="0.01"
+                    required
+                    placeholder="Məs: 39.90"
+                >
+
+            </div>
+
+
+            <!-- KÖHNƏ QİYMƏT -->
+
+            <div class="form-group">
+
+                <label>
+                    Köhnə Qiymət (Varsa, AZN):
+                </label>
+
+                <input
+                    type="number"
+                    id="oldPrice"
+                    step="0.01"
+                    placeholder="Məs: 49.90"
+                >
+
+            </div>
+
+
+            <!-- ÖLÇÜ -->
+
+            <div class="form-group">
+
+                <label>
+                    Ölçüsü (sm / mm):
+                </label>
+
+                <input
+                    type="text"
+                    id="size"
+                    required
+                    placeholder="Məs: 15x20x10 sm"
+                >
+
+            </div>
+
+
+            <!-- STOK -->
+
+            <div class="form-group">
+
+                <label>
+                    Stok Sayı:
+                </label>
+
+                <input
+                    type="number"
+                    id="stock"
+                    required
+                    placeholder="Məs: 10"
+                >
+
+            </div>
+
+
+            <!-- BADGE -->
+
+            <div class="form-group">
+
+                <label>
+                    Nişan (Badge):
+                </label>
+
+                <select id="badge">
+
+                    <option value="">
+                        Yoxdur
+                    </option>
+
+                    <option value="badge-new">
+                        NEW
+                    </option>
+
+                    <option value="badge-popular">
+                        POPULAR
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ƏSAS ŞƏKİL -->
+
+            <div class="form-group">
+
+                <label>
+                    Əsas Şəkil URL-i:
+                </label>
+
+                <input
+                    type="url"
+                    id="image"
+                    required
+                    placeholder="https://example.com/main.jpg"
+                >
+
+            </div>
+
+
+            <!-- ŞƏKİL 2 -->
+
+            <div class="form-group">
+
+                <label>
+                    Əlavə Şəkil 1:
+                </label>
+
+                <input
+                    type="url"
+                    id="image2"
+                    placeholder="https://example.com/detail1.jpg"
+                >
+
+            </div>
+
+
+            <!-- ŞƏKİL 3 -->
+
+            <div class="form-group">
+
+                <label>
+                    Əlavə Şəkil 2:
+                </label>
+
+                <input
+                    type="url"
+                    id="image3"
+                    placeholder="https://example.com/detail2.jpg"
+                >
+
+            </div>
+
+
+            <!-- TƏSVİR -->
+
+            <div class="form-group">
+
+                <label>
+                    Geniş Təsvir / Haqqında:
+                </label>
+
+                <textarea
+                    id="desc"
+                    rows="4"
+                    placeholder="Məhsul haqqında ətraflı məlumat..."
+                ></textarea>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-submit"
+                id="submit-product"
+            >
+                Məhsulu Əlavə Et
+            </button>
+
+
+            <div
+                id="admin-message"
+                class="admin-message"
+            ></div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MÖVCUD MƏHSULLAR -->
+    <!-- ================================================= -->
+
+    <h2 class="section-title">
+        Mövcud Məhsullar
+    </h2>
+
+
+    <div
+        class="product-grid"
+        id="admin-products-list"
+    >
+
+        <div class="loading-message">
+            Məhsullar yüklənir...
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE AYARLARI
+   ===================================================== */
+
+const SUPABASE_URL =
+    "https://iktngczlingbdueobpor.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_w2ZvQMrsLCBDnysA0zyARQ_BbcoXXLR";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+/* =====================================================
+   TABLE ADI
+   ===================================================== */
+
+const TABLE_NAME = "Admin";
+
+
+/* =====================================================
+   SLAYDER ŞƏKİLLƏRİ
+   ===================================================== */
+
+const base64Images = {
+    1: "",
+    2: "",
+    3: ""
+};
+
+
+[1, 2, 3].forEach(id => {
+
+    const dropZone =
+        document.getElementById(
+            `drop-zone-${id}`
+        );
+
+
+    [
+        "dragenter",
+        "dragover",
+        "dragleave",
+        "drop"
+    ].forEach(eventName => {
+
+        dropZone.addEventListener(
+            eventName,
+            e => {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+            }
+        );
+
+    });
+
+
+    [
+        "dragenter",
+        "dragover"
+    ].forEach(eventName => {
+
+        dropZone.addEventListener(
+            eventName,
+            () => {
+
+                dropZone.classList.add(
+                    "active"
+                );
+
+            }
+        );
+
+    });
+
+
+    [
+        "dragleave",
+        "drop"
+    ].forEach(eventName => {
+
+        dropZone.addEventListener(
+            eventName,
+            () => {
+
+                dropZone.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+    });
+
+
+    dropZone.addEventListener(
+        "drop",
+        e => {
+
+            const files =
+                e.dataTransfer.files;
+
+
+            if (files.length > 0) {
+
+                processFile(
+                    files[0],
+                    id
+                );
+
+            }
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   ŞƏKİL SEÇ
+   ===================================================== */
+
+function handleFileSelect(event, id) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (file) {
+
+        processFile(
+            file,
+            id
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ŞƏKİLİ OXU
+   ===================================================== */
+
+function processFile(file, id) {
+
+    if (
+        !file.type ||
+        !file.type.startsWith("image/")
+    ) {
+
+        alert(
+            "Zəhmət olmasa şəkil faylı seç."
+        );
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onloadend = () => {
+
+        base64Images[id] =
+            reader.result;
+
+
+        const preview =
+            document.getElementById(
+                `preview-${id}`
+            );
+
+
+        preview.src =
+            reader.result;
+
+
+        preview.style.display =
+            "block";
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* =====================================================
+   SLAYD SAXLA
+   ===================================================== */
+
+function saveSlideImage(id) {
+
+    if (!base64Images[id]) {
+
+        alert(
+            "Əvvəlcə şəkil seç!"
+        );
+
+        return;
+
+    }
+
+
+    let customSlides =
+        JSON.parse(
+            localStorage.getItem(
+                "maketci_slides"
+            )
+        ) || {};
+
+
+    customSlides[id] =
+        base64Images[id];
+
+
+    localStorage.setItem(
+        "maketci_slides",
+        JSON.stringify(
+            customSlides
+        )
+    );
+
+
+    alert(
+        `Slayd ${id} uğurla yadda saxlanıldı!`
+    );
+
+}
+
+
+/* =====================================================
+   SAXLANMIŞ SLAYDLARI YÜKLƏ
+   ===================================================== */
+
+function loadSavedSlides() {
+
+    const customSlides =
+        JSON.parse(
+            localStorage.getItem(
+                "maketci_slides"
+            )
+        ) || {};
+
+
+    [1, 2, 3].forEach(id => {
+
+        if (customSlides[id]) {
+
+            const preview =
+                document.getElementById(
+                    `preview-${id}`
+                );
+
+
+            preview.src =
+                customSlides[id];
+
+
+            preview.style.display =
+                "block";
+
+
+            base64Images[id] =
+                customSlides[id];
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   HTML ELEMENTLƏRİ
+   ===================================================== */
+
+const form =
+    document.getElementById(
+        "product-form"
+    );
+
+
+const productsList =
+    document.getElementById(
+        "admin-products-list"
+    );
+
+
+const messageBox =
+    document.getElementById(
+        "admin-message"
+    );
+
+
+const submitButton =
+    document.getElementById(
+        "submit-product"
+    );
+
+
+/* =====================================================
+   MESAJ GÖSTƏR
+   ===================================================== */
+
+function showMessage(
+    message,
+    type
+) {
+
+    messageBox.textContent =
+        message;
+
+
+    messageBox.className =
+        "admin-message";
+
+
+    if (type === "success") {
+
+        messageBox.classList.add(
+            "success-message"
+        );
+
+    }
+
+
+    if (type === "error") {
+
+        messageBox.classList.add(
+            "error-message"
+        );
+
+    }
+
+
+    if (type === "loading") {
+
+        messageBox.classList.add(
+            "loading-message"
+        );
+
+    }
+
+
+    messageBox.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   ADMIN TABLE-DAN MƏHSULLARI GƏTİR
+   ===================================================== */
+
+async function loadAdminProducts() {
+
+    productsList.innerHTML = `
+        <div class="loading-message">
+            Məhsullar yüklənir...
+        </div>
+    `;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from(TABLE_NAME)
+        .select("*")
+        .order("id", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error(
+            "Məhsullar yüklənmədi:",
+            error
+        );
+
+
+        productsList.innerHTML = `
+
+            <div class="empty-products">
+
+                <h3>
+                    ❌ Məhsullar yüklənmədi
+                </h3>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        productsList.innerHTML = `
+
+            <div class="empty-products">
+
+                <h3>
+                    📦 Hələ məhsul yoxdur
+                </h3>
+
+                <p>
+                    Yuxarıdakı formadan ilk məhsulu əlavə et.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    productsList.innerHTML = "";
+
+
+    data.forEach(product => {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "product-card";
+
+
+        const image =
+            product.image ||
+            "https://via.placeholder.com/500x300?text=No+Image";
+
+
+        const title =
+            product.title ||
+            "Adsız məhsul";
+
+
+        const price =
+            product.price ??
+            "0";
+
+
+        const size =
+            product.size ||
+            "-";
+
+
+        const stock =
+            product.stock ??
+            "0";
+
+
+        card.innerHTML = `
+
+            <img
+                src="${image}"
+                alt="${title}"
+                onerror="
+                    this.src='https://via.placeholder.com/500x300?text=No+Image'
+                "
+            >
+
+            <div class="product-info">
+
+                <h3 class="product-title">
+                    ${title}
+                </h3>
+
+                <div class="product-price">
+                    ${price} AZN
+                </div>
+
+                <p class="product-desc">
+                    Ölçü: ${size}
+                    |
+                    Stok: ${stock} ədəd
+                </p>
+
+                <button
+                    class="btn-delete"
+                    onclick="deleteProduct('${product.id}')"
+                >
+                    🗑️ Məhsulu Sil
+                </button>
+
+            </div>
+
+        `;
+
+
+        productsList.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   MƏHSUL ƏLAVƏ ET
+   ===================================================== */
+
+form.addEventListener(
+    "submit",
+    async e => {
+
+        e.preventDefault();
+
+
+        submitButton.disabled =
+            true;
+
+
+        submitButton.textContent =
+            "Əlavə olunur...";
+
+
+        showMessage(
+            "Məhsul database-ə əlavə olunur...",
+            "loading"
+        );
+
+
+        /* ---------------------------------------------
+           FORM MƏLUMATLARI
+           --------------------------------------------- */
+
+        const title =
+            document.getElementById(
+                "title"
+            ).value.trim();
+
+
+        const price =
+            parseFloat(
+                document.getElementById(
+                    "price"
+                ).value
+            );
+
+
+        const oldPriceValue =
+            document.getElementById(
+                "oldPrice"
+            ).value;
+
+
+        const oldPrice =
+            oldPriceValue
+                ? parseFloat(
+                    oldPriceValue
+                )
+                : null;
+
+
+        const size =
+            document.getElementById(
+                "size"
+            ).value.trim();
+
+
+        const stock =
+            parseInt(
+                document.getElementById(
+                    "stock"
+                ).value,
+                10
+            );
+
+
+        const badge =
+            document.getElementById(
+                "badge"
+            ).value;
+
+
+        const image =
+            document.getElementById(
+                "image"
+            ).value.trim();
+
+
+        const image2 =
+            document.getElementById(
+                "image2"
+            ).value.trim();
+
+
+        const image3 =
+            document.getElementById(
+                "image3"
+            ).value.trim();
+
+
+        const desc =
+            document.getElementById(
+                "desc"
+            ).value.trim();
+
+
+        /* ---------------------------------------------
+           MƏHSULU ADMIN TABLE-A ƏLAVƏ ET
+           --------------------------------------------- */
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from(TABLE_NAME)
+            .insert([
+                {
+                    title: title,
+                    price: price,
+                    oldPrice: oldPrice,
+                    size: size,
+                    stock: stock,
+                    badge: badge,
+                    image: image,
+                    image2: image2,
+                    image3: image3,
+                    desc: desc
+                }
+            ])
+            .select();
+
+
+        /* ---------------------------------------------
+           XƏTA
+           --------------------------------------------- */
+
+        if (error) {
+
+            console.error(
+                "Məhsul əlavə edilərkən xəta:",
+                error
+            );
+
+
+            showMessage(
+                "❌ Məhsul əlavə olunmadı: " +
+                error.message,
+                "error"
+            );
+
+
+            submitButton.disabled =
+                false;
+
+
+            submitButton.textContent =
+                "Məhsulu Əlavə Et";
+
+
+            return;
+
+        }
+
+
+        /* ---------------------------------------------
+           UĞURLU
+           --------------------------------------------- */
+
+        console.log(
+            "Əlavə olunan məhsul:",
+            data
+        );
+
+
+        form.reset();
+
+
+        showMessage(
+            "✅ Məhsul uğurla Admin database-ə əlavə edildi!",
+            "success"
+        );
+
+
+        await loadAdminProducts();
+
+
+        submitButton.disabled =
+            false;
+
+
+        submitButton.textContent =
+            "Məhsulu Əlavə Et";
+
+    }
+);
+
+
+/* =====================================================
+   MƏHSUL SİL
+   ===================================================== */
+
+async function deleteProduct(id) {
+
+    const confirmed =
+        confirm(
+            "Bu məhsulu həqiqətən silmək istəyirsən?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from(TABLE_NAME)
+        .delete()
+        .eq(
+            "id",
+            id
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Məhsul silinmədi:",
+            error
+        );
+
+
+        alert(
+            "❌ Məhsul silinmədi!\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "✅ Məhsul database-dən silindi!"
+    );
+
+
+    await loadAdminProducts();
+
+}
+
+
+/* =====================================================
+   SƏHİFƏ AÇILANDA
+   ===================================================== */
+
+window.addEventListener(
+    "load",
+    async () => {
+
+        loadSavedSlides();
+
+        await loadAdminProducts();
+
+    }
+);
+async function orderProduct(productId) {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        // Hesab yoxdursa login səhifəsinə göndər
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Hesab varsa real sifariş səhifəsinə göndər
+    window.location.href = `order.html?id=${productId}`;
+}
+</script>
+
+</body>
+</html>
